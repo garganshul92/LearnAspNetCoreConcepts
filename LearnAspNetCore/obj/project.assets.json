@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\LearnAspNetCore\\LearnAspNetCore\\LearnAspNetCore.csproj",
+      "projectUniqueName": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
       "projectName": "LearnAspNetCore",
-      "projectPath": "D:\\LearnAspNetCore\\LearnAspNetCore\\LearnAspNetCore.csproj",
+      "projectPath": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
       "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
-      "outputPath": "D:\\LearnAspNetCore\\LearnAspNetCore\\obj\\",
+      "outputPath": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "N16iruE1LkSdrwmAP8ziK//qWmsBadJYmsnk2s60URlFVZsWi90XrNpxH9j6D7fOlnehzTallsOBmLj9ckVfpQ==",
+  "dgSpecHash": "w/4nRjI9QNQtXsLs+acA3bJ3l0lcfx/aibg0ej2WGmRigJtMRAb5VIfB8WLUnxA+M5caG1qI2xf4Fh8WHrSAOA==",
   "success": true,
-  "projectFilePath": "D:\\LearnAspNetCore\\LearnAspNetCore\\LearnAspNetCore.csproj",
+  "projectFilePath": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

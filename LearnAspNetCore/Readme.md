@@ -30,4 +30,12 @@
     - Environment Variables (in launchSettings.json)
     - Command Line Arguments
 
-## 
+## ASPNET Core Middleware
+- Request Pipeline
+    - Middleware for Authentication
+    - Middleware for Serving Static files and so on
+
+- Configure method can setup our middleware pipeline
+- Middleware can decide to not allow the request to move ahead and this is called Short Circuiting
+- Middleware have access to Request as well as Response and can update both Request as well as Response
+- Middleware execute in the same order as they are defined.
