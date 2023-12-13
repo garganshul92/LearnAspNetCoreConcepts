@@ -43,6 +43,7 @@
 ## Configure ASP NET core request pipeline
 - app.Run is terminal middleware
 - Middlewares after app.Run will not run
+- next() run the next Middleware
 
 ```
 app.Use(async (context, next) =>
