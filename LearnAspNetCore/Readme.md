@@ -39,3 +39,20 @@
 - Middleware can decide to not allow the request to move ahead and this is called Short Circuiting
 - Middleware have access to Request as well as Response and can update both Request as well as Response
 - Middleware execute in the same order as they are defined.
+
+## Configure ASP NET core request pipeline
+- app.Run is terminal middleware
+- Middlewares after app.Run will not run
+
+```
+app.Use(async (context, next) =>
+{
+    await context.Response.WriteAsync("Hello from First");
+    await next();
+});
+
+app.Run(async (context) =>
+{
+    await context.Response.WriteAsync("Hello from Second");
+});
+```
