@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Dell\\.nuget\\packages\\": {}
+    "C:\\Users\\Anshul_Garg\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
+      "projectUniqueName": "C:\\Anshul Garg\\Upskilling\\LearnDotNetCoreBasics\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
       "projectName": "LearnAspNetCore",
-      "projectPath": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
-      "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
-      "outputPath": "D:\\LearnAspNetCore\\LearnAspNetCoreConcepts\\LearnAspNetCore\\obj\\",
+      "projectPath": "C:\\Anshul Garg\\Upskilling\\LearnDotNetCoreBasics\\LearnAspNetCoreConcepts\\LearnAspNetCore\\LearnAspNetCore.csproj",
+      "packagesPath": "C:\\Users\\Anshul_Garg\\.nuget\\packages\\",
+      "outputPath": "C:\\Anshul Garg\\Upskilling\\LearnDotNetCoreBasics\\LearnAspNetCoreConcepts\\LearnAspNetCore\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Dell\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Anshul_Garg\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

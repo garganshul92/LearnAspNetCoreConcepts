@@ -6,12 +6,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Readme.md" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Readme.md" />
-  </ItemGroup>
-
 </Project>
