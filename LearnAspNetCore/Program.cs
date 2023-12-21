@@ -1,27 +1,15 @@
-using Microsoft.AspNetCore.Builder;
-
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.MapGet("/", () => System.Diagnostics.Process.GetCurrentProcess().ProcessName);
 
-app.Use(async (context, next) =>
+if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
 {
-    await context.Response.WriteAsync("Hello from First");
-    await next();
-});
+    DeveloperExceptionPageOptions options = new();
+    options.SourceCodeLineCount = 10;
+    app.UseDeveloperExceptionPage(options);
+}
 
-/*
-//DefaultFilesOptions options = new DefaultFilesOptions();
-//options.DefaultFileNames.Clear();
-//options.DefaultFileNames.Add("staticHtmlFile.html");
-//app.UseDefaultFiles(options);
-//app.UseStaticFiles();
-*/
-
-FileServerOptions options = new FileServerOptions();
-options.DefaultFilesOptions.DefaultFileNames.Clear();
-options.DefaultFilesOptions.DefaultFileNames.Add("staticHtmlFile.html");
 app.UseFileServer();
 
 app.Run(async (context) =>

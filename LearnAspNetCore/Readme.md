@@ -80,3 +80,42 @@ options.DefaultFilesOptions.DefaultFileNames.Clear();
 options.DefaultFilesOptions.DefaultFileNames.Add("staticHtmlFile.html");
 app.UseFileServer(options);
 ```
+
+## 16. ASP.NET Core Developer Exception Page
+- Developer Exception Page is only for Development Environment
+- To enable Developer Exception Page, we need to add app.UseDeveloperExceptionPage() middleware
+- Must be plugged as early as possible- 
+- Contains useful information like Stack Trace, Query String, Cookies, Headers, Route Data, Environment Variables, Connection Strings, Loaded Assemblies, Loaded Types, Loaded Services, Request Body, Response Body, Session, Cache, Claims, Identity, Environment Variables, Request and Response Headers, Cookies, Query String, Route Data, Connection Strings, Loaded Assemblies, Loaded Types, Loaded Services, Request Body, Response Body, Session, Cache, Claims, Identity
+- Use DeveloperPageException options to configure the developer exception page
+```
+if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+{
+    DeveloperExceptionPageOptions options = new();
+    options.SourceCodeLineCount = 10;
+    app.UseDeveloperExceptionPage(options);
+}
+```
+
+## 17. ASP.NET Core Environment Variables
+- ASPNETCORE_ENVIRONMENT is the environment variable    
+- Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") will return the environment variable value
+- Environment variables can be set in launchSettings.json
+```
+"profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5008",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+```
+- Environment variables can be set in Visual Studio
+	- Project Properties -> Debug -> Environment Variables
+- Environment variable can be set via Environment variable in window
+- Environment variable set in launchSettings.json will override the environenment variable set in window.
+- Use IHostingEnvironment to get the environment name
+- Runtime environment defaut value is Production
+- In addition to standard environment variable, we can also create custom environment variable
