@@ -81,7 +81,7 @@ options.DefaultFilesOptions.DefaultFileNames.Add("staticHtmlFile.html");
 app.UseFileServer(options);
 ```
 
-## 16. ASP.NET Core Developer Exception Page
+## 13. ASP.NET Core Developer Exception Page
 - Developer Exception Page is only for Development Environment
 - To enable Developer Exception Page, we need to add app.UseDeveloperExceptionPage() middleware
 - Must be plugged as early as possible- 
@@ -96,7 +96,7 @@ if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
 }
 ```
 
-## 17. ASP.NET Core Environment Variables
+## 14. ASP.NET Core Environment Variables
 - ASPNETCORE_ENVIRONMENT is the environment variable    
 - Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") will return the environment variable value
 - Environment variables can be set in launchSettings.json
@@ -119,3 +119,28 @@ if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
 - Use IHostingEnvironment to get the environment name
 - Runtime environment defaut value is Production
 - In addition to standard environment variable, we can also create custom environment variable
+
+## 15. ASP.NET Core MVC Tutorial
+- MVC is an architectural pattern for implementing user interface layer of an application
+- Model - Set of Classes that represent the data + the logic to manage the data
+- View - Contains the UI logic to display the Model Data provided to it by the Controller
+- Controller - Handles the HTTP request, work with the Model, and selects a View to render that Model data.
+
+## 16. ASP.NET Core MVC setup the MVC in ASP.NET Core
+- Step 1: Add the MVC services to the Dependency injection Container
+```
+builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+```
+
+- Add MVC Middleware to the Request Pipeline
+```
+app.UseStaticFiles();
+app.UseMvcWithDefaultRoute();
+app.Run();
+```
+
+## 17. ASP.NET Core AddMvc vs AddMvcCore
+- AddMvcCore() method only adds the core MVC services
+- AddMvc() method adds all the required MVC services.
+- AddMvc() method internally calls AddMvcCore() method.
+
