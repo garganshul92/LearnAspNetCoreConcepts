@@ -144,3 +144,51 @@ app.Run();
 - AddMvc() method adds all the required MVC services.
 - AddMvc() method internally calls AddMvcCore() method.
 
+## 18. Model in ASP.NET Core MVC
+- In ASP.NET core, it is not mandatory to keep Controllers, Models in respective folders. They can live in any folder.
+- Model = Set of classes that represent the data and the logic to manage the data (e.g. Employee, IEmployeeRepository, EmployeeRepository)
+
+## 19. ASP.NET Core Dependency Injection
+- To Register with Dependency Injection Container, ASP.NET provides us 3 methods
+    - AddSingleton() - Single instance for service
+    - AddTransient() - New Instance everytime
+    - AddScoped() - New Instance created per HTTP request
+- Benefits of DI
+    - Loosely coupled
+    - Easy to Unit test
+- It is a good practice to make the private field as readonly, as it helps us avoiding the assignment of the field new value in the class.
+
+## 20. Controller in ASP.NET Core MVC
+- A class that derives from Controller Base class.
+- Usually Controller class names end with Controller (e.g HomeController, EmployeeController etc.).
+- Controller handles the incoming HTTP request
+- Builds the Model AND
+- Returns the Model data to the caller if we are building an API OR
+- Select a View and pass the model data to the view
+- The view generates the required HTML to present the data.
+
+## 21. View in ASP.NET Core MVC
+- A view file have .cshtml file extension
+- A view is an html template with embedded Razor markup
+- Contains logic to display the data
+- All the views belonging to controller should be in the controller name folder in views folder
+- We can also change the default folder conventions too.
+
+## 22. Customize view discovery in ASP.NET Core MVC
+- View() or View(object model): Looks for a view with file name same as action method in controller name folder in views folder.
+- View(string viewName)
+    - Looks for a view file with your own custom name
+    - You can specify  a view name or a view file path
+    - View file path can be relative or absolute
+    - With absolute file path .cshtml extension must be specified.
+    ```
+       return View("MyViews/TestMyView.cshtml", model);
+    ```
+    - With relative file path, we don't specify the .cshtml extension.
+    ```
+       return View("../Test/Test", model);
+    ```
+- View(string viewName, object model)
+
+## 23. Passing data to view in ASP.NET Core MVC
+- 

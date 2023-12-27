@@ -1,6 +1,9 @@
+using LearnAspNetCore.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+builder.Services.AddMvc(options => options.EnableEndpointRouting = false).AddXmlSerializerFormatters();
+builder.Services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
 
 var app = builder.Build();
 
