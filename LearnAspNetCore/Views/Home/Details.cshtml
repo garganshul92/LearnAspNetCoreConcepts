@@ -1,8 +1,20 @@
-﻿<html xmlns="http://www.w3.org/1999/xhtml">
+﻿@model LearnAspNetCore.ViewModels.HomeDetailsViewModel;
+
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
 </head>
 <body>
-    <h1>Details.cshtml from views</h1>
+    <h3>@Model.PageTitle</h3>
+
+    <div>
+        Name: @Model.Employee.Name
+    </div>
+    <div>
+        Email: @Model.Employee.Email
+    </div>
+    <div>
+        Department: @Model.Employee.Name
+    </div>
 </body>
 </html>

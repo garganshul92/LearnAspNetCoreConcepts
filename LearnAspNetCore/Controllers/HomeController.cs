@@ -1,4 +1,5 @@
 ﻿using LearnAspNetCore.Models;
+using LearnAspNetCore.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnAspNetCore.Controllers
@@ -20,8 +21,11 @@ namespace LearnAspNetCore.Controllers
         public ViewResult Details()
         {
             Employee model = _employeeRepository.GetEmployee(1);
-            //return View("MyViews/TestMyView.cshtml", model);
-            return View("../Test/Test", model);
+            HomeDetailsViewModel viewModel = new HomeDetailsViewModel() {
+                PageTitle = "Employee Details",
+                Employee = model
+            };
+            return View(viewModel);
         }
     }
 }

@@ -191,4 +191,125 @@ app.Run();
 - View(string viewName, object model)
 
 ## 23. Passing data to view in ASP.NET Core MVC
-- 
+- Three ways to pass data to View
+    - ViewData
+    - ViewBag
+    - Strongly Typed View
+- ViewData
+    - Dictionary of weekly typed objects
+    - Use string keys to store and retrieve the data
+    - Dynamically resolved at run time
+- ViewData Drawbacks
+    - We can't determine the errors at compile time as this is loosely typed
+- Controller Code
+    ```
+        public ViewResult Details()
+        {
+            Employee model = _employeeRepository.GetEmployee(1);
+            ViewData["Employee"] = model;
+            ViewData["PageTitle"] = "Employee Details";
+            return View();
+        }
+    ```
+- View Code
+    ```
+        <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+                <title></title>
+            </head>
+            <body>
+                <h3>@ViewData["PageTitle"]</h3>
+
+                @{
+                    var employee = ViewData["Employee"] as LearnAspNetCore.Models.Employee;
+                }
+                <div>
+                    Name: @employee.Name
+                </div>
+                <div>
+                    Email: @employee.Email
+                </div>
+                <div>
+                    Department: @employee.Name
+                </div>
+            </body>
+            </html>
+    ``` 
+
+## 24. ViewBag in ASP.NET Core MVC
+- ViewBag is wrapper around ViewData
+- ViewBag uses Dynamic properties
+- Creates a loosely typed view
+- Resolved dynamically at runtime
+- No compile time type checking and intellisense
+- Preferred approach to pass data from Controller to view is Strongly Typed View
+- Controller Code
+    ```
+        public ViewResult Details()
+        {
+            Employee model = _employeeRepository.GetEmployee(1);
+            ViewBag.Employee = model;
+            ViewBag.PageTitle = "Employee Details";
+            return View();
+        }
+    ```  
+- View Code
+    ```
+        <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+                <title></title>
+            </head>
+            <body>
+                <h3>@ViewBag.PageTitle</h3>
+
+                <div>
+                    Name: @ViewBag.Employee.Name
+                </div>
+                <div>
+                    Email: @ViewBag.Employee.Email
+                </div>
+                <div>
+                    Department: @ViewBag.Employee.Department
+                </div>
+            </body>
+            </html>
+    ```
+
+## 25. Strongly Typed View in ASP.NET Core MVC
+- Specify the model type in the view using @model Directive
+    ```
+    @model LearnAspNetCore.Models.Employee;
+    ```
+- To access the model properties we use @Model
+    ```
+        <div>
+            Name: @Model.Name
+        </div>
+        <div>
+            Email: @Model.Email
+        </div>
+    ```
+- It is always advisable to avoid ViewBag and ViewData as we don't get compile time error in case of misspelled properties.
+
+## 26. ViewModel in ASP.NET Core MVC
+- We create a ViewModel when our model object doesn't contain all the data our view needs
+    ```
+        public class HomeDetailsViewModel
+        {
+            public string PageTitle { get; set; }
+            public Employee Employee { get; set; }
+        }
+    ```
+    ```
+        public ViewResult Details()
+        {
+            Employee model = _employeeRepository.GetEmployee(1);
+            HomeDetailsViewModel viewModel = new HomeDetailsViewModel() {
+                PageTitle = "Employee Details",
+                Employee = model
+            };
+            return View(viewModel);
+        }
+    ```
+
+## 27.List View in ASP.NET Core MVC
