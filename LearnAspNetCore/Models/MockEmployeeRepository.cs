@@ -1,4 +1,5 @@
-﻿namespace LearnAspNetCore.Models
+﻿
+namespace LearnAspNetCore.Models
 {
     public class MockEmployeeRepository : IEmployeeRepository
     {
@@ -14,6 +15,11 @@
         public Employee GetEmployee(int id)
         {
             return _employees.FirstOrDefault(x => x.Id == id);
+        }
+
+        public IEnumerable<Employee> GetEmployees()
+        {
+            return _employees;
         }
     }
 }

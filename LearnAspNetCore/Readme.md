@@ -313,3 +313,69 @@ app.Run();
     ```
 
 ## 27.List View in ASP.NET Core MVC
+- We can use foreach loop in html to populate the List View
+    ```
+    @foreach(var employee in Model)
+    {
+        <tr>
+            <td>
+                @employee.Id
+            </td>
+            <td>
+                @employee.Name
+            </td>
+            <td>
+                @employee.Department
+            </td>
+        </tr>
+    }
+    ```
+
+## 28. Layout View in ASP.NET Core MVC
+- Provides consistent look and behaviour for all the views in a web application
+- Similar to ASP.NET master page in ASP.NET Webforms
+- File on file system with extension .cshtml
+- Default name is _Layout.cshtml but we are free to use any name.
+- Code in Layout file
+    ```
+        <!DOCTYPE html>
+
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width" />
+            <title>@ViewBag.Title</title>
+        </head>
+        <body>
+            @RenderBody()
+        </body>
+        </html>
+    ```
+- Code in View files to refer Layout file
+    ```
+        @{
+            Layout = "~/Views/Shared/_Layout.cshtml";
+            ViewBag.Title = "Employees List";
+        }
+    ```
+
+## 29. Sections in Layout Page in ASP.NET Core MVC
+- A Section in a Layout View provides a way to organize where certain page elements should be placed
+- A Section can be optional or manadatory
+- A Section in the Layout view  is rendered at the location where RenderSection() method is called
+    ```
+    <!DOCTYPE html>
+
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>@ViewBag.Title</title>
+    </head>
+    <body>
+        @RenderBody()
+    </body>
+    @if (IsSectionDefined("Scripts"))
+    {
+        @RenderSection("Scripts", required: true)
+    }
+    </html>
+    ```
