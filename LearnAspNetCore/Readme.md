@@ -379,3 +379,69 @@ app.Run();
     }
     </html>
     ```
+
+## 30. _ViewStart.cshtml file in ASP.NET Core MVC
+- Code in ViewStart is executed before the code in an individual file.
+- Move the **common code** such as setting the Layout property to ViewStart
+- ViewStart reduces **code redundancy** and **improves maintainability**
+- ViewStart is hierarchical
+
+## 31. _ViewImports.cshtml in ASP.NET Core MVC
+- _ViewImports file is placed in Views folder
+- Used to include common **NameSpaces**
+- To include common namespaces we use **@using** directive
+- Other supported directives
+    - @addTagHelper
+    - @removeTagHelper
+    - @tagHelperPrefix
+    - @model
+    - @inherits
+    - @injects
+- _ViewImports file is also hierarchical
+
+## 32. Routing in ASP.NET Core MVC
+- Routing Techniques
+    - Conventional Routing
+    - Attribute Routing
+- In Conventional routing, we have 3 parts in URL (e.g. http://localhost:5008/home/details/2) 
+    - First part maps to Controller (e.g. home in above example)
+    - Second parts maps to Action method (e.g. details in above example)
+    - Third part can be optional for model binding (e.g 2 in above example)
+- We can configure routing using **app.UseMvcWithDefaultRoute();**
+- Or by using **app.UseMVC()** for custom routes
+    ```
+        app.UseMvc(routes =>
+        {
+            routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+        });
+    ```
+
+## 33. Attribut Routing in ASP.NET Core MVC
+- With Attribute Routing, [Route] attribute is used to define the Routes
+- Route can be applied on the Controller or the Controller Action methods
+- With attribute routing, routes are placed next to the action methods that will actually use them
+- Attribute routing offers more flexibility than concentional routes
+- Attribute Routes are Hierarchichal
+    - **Note** - The controller route template is not combined with the action method route template if the route template on action method start with "/" ot "~/"
+- Examples for Attribute Routing
+    - [Route("Home/Index")] on action method
+    - [Route["Home"] on controller and Route["Index"] on action method
+    - Using Tokens in Attribute Routing
+        - [Route("[controller]/[action]")]
+        - [Route("[controller]")] and [Route("[action]")] separately on controller as well as action method
+    - Use Route["/"] or Route["~/"] for default route
+
+## 34. Install and use Bootstrap in ASP.NET Core MVC 
+- Tools to install Client-Side packages
+    - Bower
+    - NPM
+    - WebPack
+    - LibMan (Default in VS)
+- Library Manager (LibMan)
+    - Light-weight, client side library aquisition tool
+    - Downloads from the file system or from a CDN
+    - libman.json is the library manager manifest file
+    - Use GUI or libman.json file to manage the packages 
+    
+## 35. Tag helper in ASP.NET Core MVC
+- 

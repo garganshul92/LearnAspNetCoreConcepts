@@ -13,15 +13,16 @@ namespace LearnAspNetCore.Controllers
         {
             _employeeRepository = employeeRepository;
         }
+
         public ViewResult Index()
         {
             var model = _employeeRepository.GetEmployees();
             return View(model);
         }
 
-        public ViewResult Details()
+        public ViewResult Details(int id)
         {
-            Employee model = _employeeRepository.GetEmployee(1);
+            Employee model = _employeeRepository.GetEmployee(id);
             HomeDetailsViewModel viewModel = new HomeDetailsViewModel() {
                 PageTitle = "Employee Details",
                 Employee = model
