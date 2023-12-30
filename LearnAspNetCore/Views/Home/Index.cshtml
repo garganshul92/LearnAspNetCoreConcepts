@@ -11,12 +11,15 @@
             <div class="card-header">
                 <h3>@employee.Name</h3>
             </div>
-            <img class="card-img-top" src="~/images/noimage.jpg" />
+            <img class="card-img-top" src="~/images/noimage.jpg" asp-append-version="true"/>
 
             <div class="card-footer text-center">
-                <a href="#" class="btn btn-primary"> View </a>
-                <a href="#" class="btn btn-primary"> Update </a>
-                <a href="#" class="btn btn-danger"> Delete </a>
+                <a asp-controller="home"
+                   asp-action="details"
+                   asp-route-id="@employee.Id"
+                   class="btn btn-primary m-1"> View </a>
+                <a href="#" class="btn btn-primary m-1"> Update </a>
+                <a href="#" class="btn btn-danger m-1"> Delete </a>
             </div>
         </div>
     }

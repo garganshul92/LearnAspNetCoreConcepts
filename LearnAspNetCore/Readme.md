@@ -444,4 +444,89 @@ app.Run();
     - Use GUI or libman.json file to manage the packages 
     
 ## 35. Tag helper in ASP.NET Core MVC
+- Server side components
+- Processed on the server side to create and render HTML elements
+- Similar to HTML Helpers
+- Built-in tag helpers - Generating links, creating forms and loading assets etc.
+- Importing tag helpers - @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+- Usage
+    ```
+        <a asp-controller="home"
+                   asp-action="details"
+                   asp-route-id="@employee.Id"
+                   class="btn btn-primary"> View </a>
+    ```
+
+## 36. Why use Tag Helpers
+- Tag helpers bind the Urls based on Route Template defined in app.UseMvc() middleware. So, if we change something there links will be adjusted automatically.
+- If we don't use tag helpers and direct links, then those links will start failing once we update the Route template.
+
+## 37. ASP.NET Core Image Tag Helper
+- Image tag helper enhaces the <img> tag to provide cache-busting behaviour for static files
+    ``` <img class="card-img-top" src="~/images/noimage.jpg" asp-append-version="true"/> ``` 
+- Based on the content of the image, a hash is generated and appended with the image url.
+    ``` <img class="card-img-top" src="/images/noimage.jpg?v=RmsuiLbBLMR_XWkV9f-BMkToyr19IK4QcG0IHC_KDKY" /> ``` 
+- Each time an image is changed on the server side, a new hash is generated and cached
+
+## 38. ASP.NET Core Environment Tag Helper
+- The application environment name is set using APNECTCORE_ENVIRONMENT
+- Environment tag helper supports rendering different content depending on the application environment
+    ```
+        <environment include="Development">
+            <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+        </environment>
+        <environment include="Staging, Production">
+            <link href="https://CDN URL/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Integrity_Hash.... />
+        </environment>
+        <environment exclude="Development">
+            <link href="https://CDN URL/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Integrity_Hash.... />
+        </environment>
+    ```
+- We can use include and/or exclude attribute
+- SubResource Integrity (SRI)
+    - The "integrity" attribute on the <link> element is used for SubResource Integrity Check
+    - SRI is security feature that allows browser to check if the file being retrieved has been maliciously altered
+- CDN and Fallback Source
+    ```
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+                  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"
+                  asp-fallback-href="~/lib/bootstrap/css/bootstrap.css"
+                  asp-fallback-test-class="sr-only"
+                  asp-fallback-test-property="position"
+                  asp-fallback-test-value="absolute"
+                  asp-suppress-fallback-integrity="true">
+    ```
+    - Use asp-fallback-href attribute to specify a fallback source
+    - Use asp-suppress-fallback-integrity attribute to suppress the intgrtiy check if the file is downloaded from the fallback source
+
+## 39. Bootstrap Navigation Menu in ASP.NET Core
+```
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+            <a class="navbar-brand" asp-controller="home" asp-action="index">
+                <img src="~/images/employees.png" height="30" width="30" />
+            </a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a asp-controller="home" asp-action="index" class="nav-link">List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="home" asp-action="index" class="nav-link">Create</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            @RenderBody()
+        </div>
+    </div>
+</body>
+```
+
+## 40. Form Tag Helper in ASP.NET Core MVC
 - 
