@@ -529,4 +529,107 @@ app.Run();
 ```
 
 ## 40. Form Tag Helper in ASP.NET Core MVC
+```
+@model Employee;
+
+@{
+    ViewBag.Title = "Create Employee";
+}
+
+<form asp-controller="home" asp-action="create" method="post" class="mt-3">
+    <div class="form-group row">
+        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Name" class="form-control" placeholder="Name" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="Email" class="form-control" placeholder="Email" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Department" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-for="Department" class="form-select col-sm-2"
+                    asp-items="Html.GetEnumSelectList<Dept>()"></select>
+        </div>
+    </div>
+    <div>
+        <button type="submit">Create</button>
+    </div>
+</form>
+```
+
+## 41. ASP.NET Core Model Binding
+- Model Binding in ASP.NET Core MVC is based on Name of the properties.
+
+## 42. ASP.NET Core Model Validation
+- Built-In Validation Attributes
+    - RegularExpression
+    - MinLength
+    - MaxLength
+    - Required
+    - Range
+    - Compare
+- Step 1. Apply Validation Attribute(s) on Properties
+    ```
+        [Required]
+        [MaxLength(50, ErrorMessage = "Name can't exceed 50 characters")]
+        public string Name { get; set; }
+
+        [Required]
+        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-93](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "Invalid Email Format")]
+        [Display(Name="Official Email")]
+        public string Email { get; set; }
+    ```
+- Step 2. Use ModelState.IsValid property to check if validation has failed or succeded
+    ```
+        [HttpPost]
+        public IActionResult Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                var newEmployee = _employeeRepository.AddEmployee(employee);
+                return RedirectToAction("details", new { id = newEmployee.Id });
+            }
+
+            return View();
+        }
+    ```
+- Step 3. Use **asp-validation-for** and **asp-validation-summary** tag helpers to display validation erros
+    ```
+        <form asp-controller="home" asp-action="create" method="post" class="mt-3">
+            <div class="form-group row">
+                <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <input asp-for="Name" class="form-control" placeholder="Name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <input asp-for="Email" class="form-control" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Department" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <select asp-for="Department" class="form-select col-sm-2"
+                            asp-items="Html.GetEnumSelectList<Dept>()"></select>
+                </div>
+            </div>
+            <div asp-validation-summary="All" class="text-danger">
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    ```
+
+## 43. Select list validation in ASP.NET Core MVC
 - 

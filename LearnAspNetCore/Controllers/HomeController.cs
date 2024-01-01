@@ -23,11 +23,30 @@ namespace LearnAspNetCore.Controllers
         public ViewResult Details(int id)
         {
             Employee model = _employeeRepository.GetEmployee(id);
-            HomeDetailsViewModel viewModel = new HomeDetailsViewModel() {
+            HomeDetailsViewModel viewModel = new HomeDetailsViewModel()
+            {
                 PageTitle = "Employee Details",
                 Employee = model
             };
             return View(viewModel);
+        }
+
+        [HttpGet]
+        public ViewResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                var newEmployee = _employeeRepository.AddEmployee(employee);
+                return RedirectToAction("details", new { id = newEmployee.Id });
+            }
+
+            return View();
         }
     }
 }
