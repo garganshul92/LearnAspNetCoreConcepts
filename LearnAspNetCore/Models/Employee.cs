@@ -14,5 +14,7 @@ public class Employee
     [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-93](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "Invalid Email Format")]
     [Display(Name="Official Email")]
     public string Email { get; set; }
-    public Dept Department { get; set; }
+    
+    [Required]
+    public Dept? Department { get; set; }
 }

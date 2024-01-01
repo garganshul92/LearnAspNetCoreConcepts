@@ -632,4 +632,58 @@ app.Run();
     ```
 
 ## 43. Select list validation in ASP.NET Core MVC
+```
+    [Required]
+    public Dept? Department { get; set; }
+```
+
+```
+<div class="form-group row">
+        <label asp-for="Department" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <select asp-for="Department" class="form-select col-sm-2"
+                    asp-items="Html.GetEnumSelectList<Dept>()">
+                <option value="">Please Select</option>
+            </select>
+            <span asp-validation-for="Department" class="text-danger"></span>
+        </div>
+    </div>
+```
+
+## 44. AddSingleton vs AddScoped vs AddTransient
+- **With AddSingleton**, there is only a single instance. An instance is created, when the service is first requested and the single instance is used by all the http requests through out the application
+- **With AddScoped**, we get the same instance withing the scope of a given http request but a new instance across different http requests
+- **With AddTransient**, a new instance is provided every time an instance is requested whether it is in the scope of the same http request or across the different http requests
+- Changes for testing
+    - Program.cs
+    ```
+        builder.Services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
+    ```
+    - Controller
+    ```
+        [HttpPost]
+        public IActionResult Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                var newEmployee = _employeeRepository.AddEmployee(employee);
+                //return RedirectToAction("details", new { id = newEmployee.Id });
+            }
+
+            return View();
+        }
+    ```
+    - View
+    ```
+        @inject IEmployeeRepository _empRepository
+        ...
+        <div class="form-group row">
+            <div class="col-sm-10">
+                Total no. of Employees: @_empRepository.GetEmployees().Count()
+            </div>
+        </div>
+        ...
+    ```
+
+## 45. Introduction to Entity Framework Core
 - 

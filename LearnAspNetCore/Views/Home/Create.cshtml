@@ -1,4 +1,5 @@
 ﻿@model Employee;
+@inject IEmployeeRepository _empRepository
 
 @{
     ViewBag.Title = "Create Employee";
@@ -23,13 +24,24 @@
         <label asp-for="Department" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
             <select asp-for="Department" class="form-select col-sm-2"
-                    asp-items="Html.GetEnumSelectList<Dept>()"></select>
+                    asp-items="Html.GetEnumSelectList<Dept>()">
+                <option value="">Please Select</option>
+            </select>
+            <span asp-validation-for="Department" class="text-danger"></span>
         </div>
     </div>
     <div asp-validation-summary="All" class="text-danger">
     </div>
 
-    <div>
-        <button type="submit" class="btn btn-primary">Create</button>
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-10">
+            Total no. of Employees: @_empRepository.GetEmployees().Count()
+        </div>
     </div>
 </form>
