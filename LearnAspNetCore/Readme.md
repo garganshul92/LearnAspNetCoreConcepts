@@ -686,4 +686,112 @@ app.Run();
     ```
 
 ## 45. Introduction to Entity Framework Core
+- ORM (Object Relational Mapper)
+- Lightweight, Extensible and Open Source
+- Works Cross Platform
+- Microsoft's official Data access platform
+- Two Approaches
+    - Code First Approach
+        - Domain and DBContext classes ==> EFCore ==> Database
+    - Database First Approach
+        - EFCore <== Database Provider ==> Database
+
+## 46. Install Entity Framework Core in Visual Studio
+- We have EF Core framework already installed in our Web Project.
+- In different project, we can install EF Core with EF Core Provider
+- EF Core Provider depends on EntityFrameworkCore.Relational and EntityFrameworkCore.Relational depends on EntityFrameworkCore. 
+- Installing EF Core Provider will install dependencies as well
+
+## 47. DbContext in Entity Framework Core
+- To use DbContext class, we create a class which inherits from DbContext class provided by EntityFrameworkCore
+- To pass configuration information to the DbContext use DbContextoptions instance
+- The DbContext class incluldes DbSet<TEntity> property for each entity in the model
+- We will use DbSet properties to query and save instances of DbSet class.
+- The LINQ queries against the DbSet<TEntity> will be translated into SQL queries against the underlying Database
+
+```
+using Microsoft.EntityFrameworkCore;
+
+namespace LearnAspNetCore.Models;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) 
+        : base(options)
+    {
+
+    }
+
+    public DbSet<Employee> Employees { get; set; }
+}
+```
+
+## 48. Using SQL Server with Entity Framework Core
+- AddDbContextPool vs AddDbContext
+    - AddDbContextPool - Provides DbContext pooling which is better as performance standpoint
+    - AddDbContext - Creates DbContext for each request
+```
+builder.Services.AddDbContextPool<AppDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDbConnection")));
+
+"ConnectionStrings": {
+    "EmployeeDbConnection": "server=(localdb)\\MSSQLLocalDb;database=EmployeeDB;Trusted_Connection=true"
+  }
+```
+- To use Intgrated Windows Authentication instead of SQL Server Authentication, we can use three settings:
+    - Trusted_Connection=true
+    - Integrated Security=true
+    - Integrated Security=SSPI
+
+## 49. Repository Pattern in ASP.NET Core
+- In Repository pattern, our repository contains CRUD operations.
+- We can have different Repository implementations (e.g. inmemory, sql etc.)
+- With Dependecy Injection, Repository pattern is a strong tool as we can update the repository by simply updating repository we want to use.
+- With DI and Repository Pattern, it makes our code decoupled and easily testable by mocking the Repositry.
+
+## 50. Entity Framework Core Migrations
+- Migration keeps the database schema and application model classed in sync
+- Install EntityFramework tools => ``` Install-Package Microsoft.EntityFrameworkCore.Tools ```
+- Get entity-framework core help => ``` Get-Help about_EntityFrameworkCore ```
+- Add a new migration => ``` Add-Migration ```
+- Update the database to a specified migration => ``` Update-Database ```
+
+## 51. Entity Framework Core Seed Data
+```
+using Microsoft.EntityFrameworkCore;
+
+namespace LearnAspNetCore.Models;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
+    {
+
+    }
+
+    public DbSet<Employee> Employees { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Employee>().HasData(
+          new Employee
+          {
+              Id = 1,
+              Name = "Marry",
+              Department = Dept.IT,
+              Email = "marry@learnaspnetcore.com"
+          },
+          new Employee
+          {
+              Id = 2,
+              Name = "Jone",
+              Department = Dept.HR,
+              Email = "john@learnaspnetcore.com"
+          });
+    }
+}
+```
+
+## 52. Keeping Domain Models and database schema in sync in ASP.NET Core
 - 

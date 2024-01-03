@@ -1,9 +1,13 @@
 using LearnAspNetCore.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContextPool<AppDbContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDbConnection")));
+
 builder.Services.AddMvc(options => options.EnableEndpointRouting = false).AddXmlSerializerFormatters();
-builder.Services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
+builder.Services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
 var app = builder.Build();
 
