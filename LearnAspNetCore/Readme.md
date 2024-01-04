@@ -794,4 +794,168 @@ public class AppDbContext : DbContext
 ```
 
 ## 52. Keeping Domain Models and database schema in sync in ASP.NET Core
-- 
+- Use **migrations** to keep domain models and database schema in sync
+- To add a new migration use **Add-Migration** command
+- To update database with latest migration use **Update-Database** command
+- To remove the latest migration that is not yet applied to the database use **Remove-Migration**
+- **__EFMigrationHistory** table is used to keep track of the migrations that are applied to the database
+- **ModelSnapshot.cs** file contains the snapshot of the current model and is used to determine what has changed when adding the next migration
+- To remove the migration the migration that is already applied to the database
+    - First use the **Update-Database** command to undo the database changes applied by the migration
+    - Next, use the **Remove-Migration** command to remove the migration code file
+
+## 53. File upload in ASP.NET Core MVC
+- EmployeeCreateViewModel
+```
+    public class EmployeeCreateViewModel
+    {
+        [Required]
+        [MaxLength(50, ErrorMessage = "Name can't exceed 50 characters")]
+        public string Name { get; set; }
+
+        [Required]
+        [RegularExpression(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-93](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", ErrorMessage = "Invalid Email Format")]
+        [Display(Name = "Official Email")]
+        public string Email { get; set; }
+
+        [Required]
+        public Dept? Department { get; set; }
+
+        public IFormFile Photo { get; set; }
+    }
+```
+
+- HomeController
+```
+[HttpPost]
+public IActionResult Create(EmployeeCreateViewModel model)
+{
+    if (ModelState.IsValid)
+    {
+        string uniqueFileName = null;
+        if (model.Photo != null)
+        {
+            string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+            uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+        }
+
+        var newEmployee = new Employee()
+        {
+            Name = model.Name,
+            Email = model.Email,
+            Department = model.Department,
+            PhotoPath = uniqueFileName,
+        };
+
+        _employeeRepository.AddEmployee(newEmployee);
+        return RedirectToAction("details", new { id = newEmployee.Id });
+    }
+
+    return View();
+}
+```
+
+- Create.cshtml
+```
+<form enctype="multipart/form-data" asp-controller="home" asp-action="create" method="post" class="mt-3">
+...
+<div class="form-group row">
+        <label asp-for="Photo" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input asp-for="Photo" class="form-control custom-file-input" />
+                <label class="custom-file-label">Choose File...</label>
+            </div>
+        </div>
+    </div>
+    ...
+```
+
+
+## 54. Upload multiple files in ASP.NET Core MVC
+- EmployeeCreateViewModel
+```
+ public List<IFormFile> Photos { get; set; }
+```
+
+- HomeController.cs
+```
+string uniqueFileName = null;
+if (model.Photos != null && model.Photos.Count > 0)
+{
+    foreach (var photo in model.Photos)
+    {
+        string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+        uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        photo.CopyTo(new FileStream(filePath, FileMode.Create));
+    }
+}
+```
+
+- Create.cshtml
+
+```
+<div class="form-group row">
+        <label asp-for="Photos" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input multiple asp-for="Photos" class="form-control custom-file-input" />
+                <label class="custom-file-label">Choose File...</label>
+            </div>
+        </div>
+    </div>
+```
+
+## 55. Edit View in ASP.NET Core MVC
+- Create Edit ViewModel class
+```
+public class EmployeeEditViewModel : EmployeeCreateViewModel
+{
+    public int Id { get; set; }
+
+    public string ExistingPhotoPath { get; set; }
+}
+```
+- Implement Edit Action that responds to HttpGet request
+```
+[HttpGet]
+public ViewResult Edit(int id)
+{
+    var employee = _employeeRepository.GetEmployee(id);
+    var employeeEditViewModel = new EmployeeEditViewModel()
+    {
+        Id = employee.Id,
+        Name = employee.Name,
+        Department = employee.Department,
+        Email = employee.Email,
+        ExistingPhotoPath = employee.PhotoPath
+    };
+
+    return View(employeeEditViewModel);
+}
+```
+- Implement Edit View
+```
+@model EmployeeEditViewModel;
+
+@{
+    ViewBag.Title = "Edit Employee";
+    var photoPath = "~/images/" + Model.ExistingPhotoPath ?? "noimage.jpg";
+}
+
+<form enctype="multipart/form-data" asp-controller="home" asp-action="edit" method="post" class="mt-3">
+    <input hidden asp-asp-for="Id" />
+    <input hidden asp-asp-for="ExistingPhotoPath" />
+    .
+    .
+    .
+    .
+
+</form>
+```
+
+## 56. HttpPost Edit Action in ASP.NET Core MVC
+-
