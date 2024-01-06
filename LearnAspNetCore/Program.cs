@@ -17,6 +17,11 @@ if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development
     options.SourceCodeLineCount = 10;
     app.UseDeveloperExceptionPage(options);
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
+}
 
 app.UseStaticFiles();
 app.UseMvc(routes =>

@@ -958,4 +958,189 @@ public ViewResult Edit(int id)
 ```
 
 ## 56. HttpPost Edit Action in ASP.NET Core MVC
--
+```
+[HttpPost]
+public IActionResult Edit(EmployeeEditViewModel model)
+{
+    if (ModelState.IsValid)
+    {
+        var employee = _employeeRepository.GetEmployee(model.Id);
+        employee.Name = model.Name;
+        employee.Email = model.Email;
+        employee.Department = model.Department;
+
+        if(model.Photo != null)
+        {
+            if(model.ExistingPhotoPath != null)
+            {
+                var existingFilePath = Path.Combine(hostingEnvironment.WebRootPath, 
+                    "images", model.ExistingPhotoPath);
+                System.IO.File.Delete(existingFilePath);
+            }
+            employee.PhotoPath = ProcessUploadedFile(model);
+        }
+
+        _employeeRepository.UpdateEmployee(employee);
+        return RedirectToAction("details", new { id = employee.Id });
+    }
+
+    return View();
+}
+
+private string ProcessUploadedFile(EmployeeCreateViewModel model)
+{
+    string uniqueFileName = null;
+
+    if (model.Photo != null)
+    {
+        string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+        uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+        using(var fileStream = new FileStream(filePath, FileMode.Create))
+        model.Photo.CopyTo(fileStream);
+    }
+
+    return uniqueFileName;
+}
+```
+
+## 57. Handling 404 Not Found in ASP.NET Core MVC
+- Two types of 404 Errors:
+    - Type 1: Resource with specified Id doesn't exist
+    ```
+        if(model == null)
+        {
+            Response.StatusCode = 404;
+            return View("EmployeeNotFound", id.Value);
+        }
+
+        @model int;
+
+        @{
+            ViewBag.Title = "Employee Not Found";
+        }
+
+        <div class="alert alert-danger mt-1 mb-1">
+            <h4>Not Found Error: </h4>
+            <h5>
+                Employee with Id: @Model cannot be found
+            </h5>
+        </div>
+        <a asp-action="Index" asp-controller="Home" class="btn btn-success" style="width:auto">
+            Click here to see list of all employees
+        </a>
+    ```
+    - Type 2: The provided URL does not match any route
+
+## 58. Centralised 404 Error Handling in ASP.NET Core MVC
+- We have three middlewares for handling the Errors
+    - ```app.UseStatusCodePages()``` => Shows plain text about the error
+    - ```app.UseStatusCodePagesWithRedirects("/Error/{0}");``` => Renders provided View
+    - ```app.UseStatusCodePagesWithReExecute("/Error/{0}");``` => Reders provided View
+- Controller:
+```
+using Microsoft.AspNetCore.Mvc;
+
+namespace LearnAspNetCore.Controllers
+{
+    public class ErrorController : Controller
+    {
+        [Route("Error/{statusCode}")]
+        public IActionResult HttpStatusCodeHandler(int statusCode)
+        {
+            switch (statusCode)
+            {
+                case 404:
+                    ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
+                    break;
+            }
+            return View("NotFound");
+        }
+    }
+}
+
+```
+- View
+```
+@{
+    ViewBag.Title = "Not Found";
+}
+
+<h1>
+    @ViewBag.ErrorMessage
+</h1>
+
+<a asp-controller="home" asp-action="index">
+    Click here to navigate to the home page
+</a>
+```
+
+## 59. app.UseStatusCodePagesWithReExecute vs app.UseStatusCodePagesWithRedirects in ASP.NET Core MVC
+- **UseStatusCodePagesWithRedirects**
+    - Issues a redirect and the url in browser is changed to the redirect URL
+    - Returns Success status(200) when actually an error  occurred which isn't semantically correct
+- **UseStatusCodePagesWithReExecute**
+    - Re-Executes the pipeline and returns the original status code (404 for example)
+    - As it rexecutes the pipeline and not issue a redirect request, we also preserve the original URL in the browser
+    - We can also access the path and query string with this middleware.
+    ```
+        var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+
+        switch (statusCode)
+        {
+            case 404:
+                ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
+                ViewBag.Path = statusCodeResult.OriginalPath;
+                ViewBag.QS = statusCodeResult.OriginalQueryString;
+                break;
+        }
+
+        return View("NotFound");
+    ```
+
+## 60. Global Exception handling in ASP.NET Core MVC
+- Step 1: Add the Exception handling middleware to the request processing pipeline
+```
+app.UseExceptionHandler("/Error");
+```
+- Step2: Implement Error Controller
+```
+[Route("Error")]
+        [AllowAnonymous]
+        public IActionResult Error()
+        {
+            var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            ViewBag.ExceptionPath = exceptionDetails.Path;
+            ViewBag.ExceptionMessage = exceptionDetails.Error.Message;
+            ViewBag.StackTrace = exceptionDetails.Error.StackTrace;
+            return View("Error");
+        }
+```
+- Step 3: Implement custom error view
+```
+<h3> An Error occurred while processing your request.
+    The support team is notified and we are working on this.
+</h3>
+<h5>
+    Please contact us contact@LearnAspNetCore.com.
+</h5>
+<hr />
+<h3>Exception Details:</h3>
+<div class="alert alert-danger">
+    <h5>Exception Path:</h5>
+    <hr />
+    <p>@ViewBag.ExceptionPath</p>
+</div>
+<div class="alert alert-danger">
+    <h5>Exception Message:</h5>
+    <hr />
+    <p>@ViewBag.ExceptionMessage</p>
+</div>
+<div class="alert alert-danger">
+    <h5>Exception StackTrace:</h5>
+    <hr />
+    <p>@ViewBag.StackTrace</p>
+</div>
+```
+
+## 61. Logging in ASP.NET Core
