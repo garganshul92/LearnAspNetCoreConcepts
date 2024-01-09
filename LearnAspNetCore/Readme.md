@@ -1144,3 +1144,145 @@ app.UseExceptionHandler("/Error");
 ```
 
 ## 61. Logging in ASP.NET Core
+- In ASP.NET Core, WebHost.CreateDefaultBuilder configures the logging
+- We have logging section in appsettings where we can update the settings for logging
+- ASP.NET Core Logging Provider
+    - Logging providers stores or displays logs
+        - **Console Logging Provider**: Displays logs on Console 
+        - **Debug Logging Provider**: Displays logs on the debug window in Visual Studio
+- Built-in Logging providers:
+    - Console
+    - Debug
+    - EventSource
+    - EventLog
+    - TraceSource
+    - AzureAppServicesFile
+    - AzureAppServicesBlob
+    - ApplicationInsights
+- Third party logging providers
+    - Nlog
+    - elmah
+    - Serilog
+    - Sentry
+    - Gelf
+    - JSNLog
+    - KissLog.net
+    - Loggr
+
+## 62. Logging exceptions in ASP.NET Core
+- Inject an instance of ILogger interface
+- Specify the type of the Controller into which ILogger is injected as the generic argument
+```
+public readonly ILogger<ErrorController> _logger;
+
+public ErrorController(ILogger<ErrorController> logger)
+{
+    _logger = logger;
+}
+```
+- Use the injected ILogger instance methods to log messages
+    - LogInformation
+    - LogWarning
+    - LogError
+    - etc...
+
+## 63. Logging to file in ASP.NET core using nlog
+- Install NLog.Web.AspNet.Core nuget package
+- Create nlog.config
+```
+<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<!-- the targets to write to -->
+	<targets>
+		<!-- write logs to file  -->
+		<target name="allfile" xsi:type="File"
+				fileName="c:\DemoLogs\nlog-all-${shortdate}.log"/>
+	</targets>
+
+	<!-- rules to map from logger name to target -->
+	<rules>
+		<!--All logs, including from Microsoft-->
+		<logger name="*" minlevel="Trace" writeTo="allfile" />
+	</rules>
+</nlog>
+```
+- Enable copy to bin folder
+- Add NLog as one of the Logging Provider
+```
+builder.Logging.AddNLog();
+```
+
+## 64. ASP.NET Core LogLevel Configuration
+- LogLevel indicates the severity of the logged messages
+    - Trace = 0
+    - Debug = 1
+    - Information = 2
+    - Warning = 3
+    - Error = 4
+    - Critical = 5
+    - None = 6
+    
+    ```
+        logger.LogTrace("Trace Log");
+        logger.LogDebug("Debug Log");
+        logger.LogInformation("Info Log");
+        logger.LogWarning("Warning Log");
+        logger.LogError("Error Log");
+        logger.LogCritical("Critical Log");
+    ```
+- Logs can be filtered by:
+    - Log Category
+    - Logging Provider
+    - Even Both
+    ```
+        "Logging": {
+            "Debug": {
+              "LogLevel": {
+                "Default": "Warning",
+                "LearnAspNetCore.Controllers.HomeController": "Warning",
+                "LearnAspNetCore.Models.SQLEmployeeRepository": "Warning",
+                "Microsoft.AspNetCore": "Warning"
+              }
+            },
+            "LogLevel": {
+              "Default": "Trace",
+              "LearnAspNetCore.Controllers.HomeController": "Trace",
+              "LearnAspNetCore.Models.SQLEmployeeRepository": "Trace",
+              "Microsoft.AspNetCore": "Warning"
+            }
+          }
+    ```
+
+## 65. ASP.NET Core Identity Tutorial
+- ASP.NET Core Identity is a Membershit system
+    - Create, Read, Update, Delete user accounts
+    - Account confirmation
+    - Authentication and Authorization
+    - Password Recovery
+    - Two factor authentication with SMS
+    - Supports external login providers like Microsoft, Google, Facebook etc.
+    - and much more ....
+- Steps:
+    - Step 1: Application DbContext class must inherit from **IndentityDbContext**
+    - Step 2: Add ASP.NET Core Identity Services
+    ```
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContext>();
+    ```
+    - Step 3: Add Authentication middleware ``` app.UseAuthentication(); ```
+    - Step 4: Generate ASP.NET Core Identity Tables
+        - Call base.OnModelCreating in OnModelCreating() method in Application DbContext class
+        ```
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                base.OnModelCreating(modelBuilder);
+                modelBuilder.Seed();
+            }
+        ```
+        - Add-Migration
+        - Update-Database
+
+## 66. Registering new user using ASP.NET Core Identity
+- 

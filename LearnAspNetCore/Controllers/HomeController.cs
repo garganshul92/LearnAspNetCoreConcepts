@@ -9,22 +9,33 @@ namespace LearnAspNetCore.Controllers
         // A good practice as 
         private readonly IEmployeeRepository _employeeRepository;
         private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment;
+        private readonly ILogger<HomeController> logger;
 
-        public HomeController(IEmployeeRepository employeeRepository, Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment)
+        public HomeController(IEmployeeRepository employeeRepository, 
+            Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment,
+            ILogger<HomeController> logger)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
+            this.logger = logger;
         }
 
         public ViewResult Index()
         {
-            throw new Exception("Intentionally thrown an exception");
+            //throw new Exception("Intentionally thrown an exception");
             var model = _employeeRepository.GetEmployees();
             return View(model);
         }
 
         public ViewResult Details(int? id)
         {
+            logger.LogTrace("Trace Log");
+            logger.LogDebug("Debug Log");
+            logger.LogInformation("Info Log");
+            logger.LogWarning("Warning Log");
+            logger.LogError("Error Log");
+            logger.LogCritical("Critical Log");
+
             Employee model = _employeeRepository.GetEmployee(id.Value);
 
             if(model == null)
