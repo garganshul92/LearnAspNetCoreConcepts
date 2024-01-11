@@ -1285,4 +1285,118 @@ builder.Logging.AddNLog();
         - Update-Database
 
 ## 66. Registering new user using ASP.NET Core Identity
+- Step 1: Add a new ViewModel - RegisterViewModel
+- Step 2: Add new controller - RegisterController
+- Step 3: Add a new Folder with name Account and add a new view with name Register in the same folder
+
+## 67. ASP.NET Core Identity UserManager and SignIn Manager
+```
+using LearnAspNetCore.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LearnAspNetCore.Controllers
+{
+    public class AccountController : Controller
+    {
+        private readonly UserManager<IdentityUser> userManager;
+        private readonly SignInManager<IdentityUser> signInManager;
+
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        {
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+        }
+        [HttpGet]
+        [Route("account/register")]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("account/register")]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if(ModelState.IsValid)
+            {
+                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+                var result = await userManager.CreateAsync(user, model.Password);
+                if(result.Succeeded)
+                {
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("index", "home");
+                }
+
+                foreach(var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View(model);
+        }
+    }
+}
+
+```
+
+## 68. ASP.NET Core Identity Password complexity
+- Two ways:
+    - Configure with AddIdentity
+    ```
+        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 3;
+            options.Password.RequireNonAlphanumeric = false;
+        }).AddEntityFrameworkStores<AppDbContext>();
+    ```
+    - Configure Separately
+    ```
+        builder.Services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 3;
+            options.Password.RequireNonAlphanumeric = false;
+        });
+    ```
+
+## 69. Show or hide login and logout links based on login status
+- View
+```
+<ul class="navbar-nav ml-auto">
+    @if (signInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <form method="post" asp-action="logout" asp-controller="account">
+                <button type="submit" class="nav-link btn btn-link py-0" style="width:auto">
+                    Logout @User.Identity.Name  
+                </button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a asp-controller="account" asp-action="register" class="nav-link">Register</a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="account" asp-action="login" class="nav-link">Login</a>
+        </li>
+    }
+</ul>
+```
+- Controller
+```
+[HttpPost]
+public async Task<IActionResult> Logout()
+{
+    await signInManager.SignOutAsync();
+    return RedirectToAction("index", "home");
+
+}
+```
+
+## 70. Implementing Login Functionality in ASP.NET Core
 - 

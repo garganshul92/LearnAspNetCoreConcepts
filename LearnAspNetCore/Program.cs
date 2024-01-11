@@ -9,8 +9,19 @@ builder.Logging.AddNLog();
 builder.Services.AddDbContextPool<AppDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeDbConnection")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 3;
+    options.Password.RequireNonAlphanumeric = false;
+}).AddEntityFrameworkStores<AppDbContext>();
+
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    options.Password.RequiredLength = 8;
+//    options.Password.RequiredUniqueChars = 3;
+//    options.Password.RequireNonAlphanumeric = false;
+//});
 
 builder.Services.AddMvc(options => options.EnableEndpointRouting = false).AddXmlSerializerFormatters();
 builder.Services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
