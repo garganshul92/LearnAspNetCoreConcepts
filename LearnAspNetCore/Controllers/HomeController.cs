@@ -1,143 +1,145 @@
 ﻿using LearnAspNetCore.Models;
 using LearnAspNetCore.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LearnAspNetCore.Controllers
+namespace LearnAspNetCore.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    // A good practice as 
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment;
+    private readonly ILogger<HomeController> logger;
+
+    public HomeController(IEmployeeRepository employeeRepository, 
+        Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment,
+        ILogger<HomeController> logger)
     {
-        // A good practice as 
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment;
-        private readonly ILogger<HomeController> logger;
+        _employeeRepository = employeeRepository;
+        this.hostingEnvironment = hostingEnvironment;
+        this.logger = logger;
+    }
 
-        public HomeController(IEmployeeRepository employeeRepository, 
-            Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment,
-            ILogger<HomeController> logger)
+    [AllowAnonymous]
+    public ViewResult Index()
+    {
+        //throw new Exception("Intentionally thrown an exception");
+        var model = _employeeRepository.GetEmployees();
+        return View(model);
+    }
+
+    [AllowAnonymous]
+    public ViewResult Details(int? id)
+    {
+        logger.LogTrace("Trace Log");
+        logger.LogDebug("Debug Log");
+        logger.LogInformation("Info Log");
+        logger.LogWarning("Warning Log");
+        logger.LogError("Error Log");
+        logger.LogCritical("Critical Log");
+
+        Employee model = _employeeRepository.GetEmployee(id.Value);
+
+        if(model == null)
         {
-            _employeeRepository = employeeRepository;
-            this.hostingEnvironment = hostingEnvironment;
-            this.logger = logger;
+            Response.StatusCode = 404;
+            return View("EmployeeNotFound", id.Value);
         }
 
-        public ViewResult Index()
+        HomeDetailsViewModel viewModel = new HomeDetailsViewModel()
         {
-            //throw new Exception("Intentionally thrown an exception");
-            var model = _employeeRepository.GetEmployees();
-            return View(model);
-        }
+            PageTitle = "Employee Details",
+            Employee = model
+        };
+        return View(viewModel);
+    }
 
-        public ViewResult Details(int? id)
+    [HttpGet]
+    public ViewResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public IActionResult Create(EmployeeCreateViewModel model)
+    {
+        if (ModelState.IsValid)
         {
-            logger.LogTrace("Trace Log");
-            logger.LogDebug("Debug Log");
-            logger.LogInformation("Info Log");
-            logger.LogWarning("Warning Log");
-            logger.LogError("Error Log");
-            logger.LogCritical("Critical Log");
+            string uniqueFileName = ProcessUploadedFile(model);
 
-            Employee model = _employeeRepository.GetEmployee(id.Value);
-
-            if(model == null)
+            var newEmployee = new Employee()
             {
-                Response.StatusCode = 404;
-                return View("EmployeeNotFound", id.Value);
-            }
-
-            HomeDetailsViewModel viewModel = new HomeDetailsViewModel()
-            {
-                PageTitle = "Employee Details",
-                Employee = model
-            };
-            return View(viewModel);
-        }
-
-        [HttpGet]
-        public ViewResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(EmployeeCreateViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                string uniqueFileName = ProcessUploadedFile(model);
-
-                var newEmployee = new Employee()
-                {
-                    Name = model.Name,
-                    Email = model.Email,
-                    Department = model.Department,
-                    PhotoPath = uniqueFileName,
-                };
-
-                _employeeRepository.AddEmployee(newEmployee);
-                return RedirectToAction("details", new { id = newEmployee.Id });
-            }
-
-            return View();
-        }
-
-        [HttpGet]
-        public ViewResult Edit(int id)
-        {
-            var employee = _employeeRepository.GetEmployee(id);
-            var employeeEditViewModel = new EmployeeEditViewModel()
-            {
-                Id = employee.Id,
-                Name = employee.Name,
-                Department = employee.Department,
-                Email = employee.Email,
-                ExistingPhotoPath = employee.PhotoPath
+                Name = model.Name,
+                Email = model.Email,
+                Department = model.Department,
+                PhotoPath = uniqueFileName,
             };
 
-            return View(employeeEditViewModel);
+            _employeeRepository.AddEmployee(newEmployee);
+            return RedirectToAction("details", new { id = newEmployee.Id });
         }
 
-        [HttpPost]
-        public IActionResult Edit(EmployeeEditViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var employee = _employeeRepository.GetEmployee(model.Id);
-                employee.Name = model.Name;
-                employee.Email = model.Email;
-                employee.Department = model.Department;
+        return View();
+    }
 
-                if(model.Photo != null)
+    [HttpGet]
+    public ViewResult Edit(int id)
+    {
+        var employee = _employeeRepository.GetEmployee(id);
+        var employeeEditViewModel = new EmployeeEditViewModel()
+        {
+            Id = employee.Id,
+            Name = employee.Name,
+            Department = employee.Department,
+            Email = employee.Email,
+            ExistingPhotoPath = employee.PhotoPath
+        };
+
+        return View(employeeEditViewModel);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(EmployeeEditViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var employee = _employeeRepository.GetEmployee(model.Id);
+            employee.Name = model.Name;
+            employee.Email = model.Email;
+            employee.Department = model.Department;
+
+            if(model.Photo != null)
+            {
+                if(model.ExistingPhotoPath != null)
                 {
-                    if(model.ExistingPhotoPath != null)
-                    {
-                        var existingFilePath = Path.Combine(hostingEnvironment.WebRootPath, 
-                            "images", model.ExistingPhotoPath);
-                        System.IO.File.Delete(existingFilePath);
-                    }
-                    employee.PhotoPath = ProcessUploadedFile(model);
+                    var existingFilePath = Path.Combine(hostingEnvironment.WebRootPath, 
+                        "images", model.ExistingPhotoPath);
+                    System.IO.File.Delete(existingFilePath);
                 }
-
-                _employeeRepository.UpdateEmployee(employee);
-                return RedirectToAction("details", new { id = employee.Id });
+                employee.PhotoPath = ProcessUploadedFile(model);
             }
 
-            return View();
+            _employeeRepository.UpdateEmployee(employee);
+            return RedirectToAction("details", new { id = employee.Id });
         }
 
-        private string ProcessUploadedFile(EmployeeCreateViewModel model)
+        return View();
+    }
+
+    private string ProcessUploadedFile(EmployeeCreateViewModel model)
+    {
+        string uniqueFileName = null;
+
+        if (model.Photo != null)
         {
-            string uniqueFileName = null;
-
-            if (model.Photo != null)
-            {
-                string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using(var fileStream = new FileStream(filePath, FileMode.Create))
-                model.Photo.CopyTo(fileStream);
-            }
-
-            return uniqueFileName;
+            string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+            uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using(var fileStream = new FileStream(filePath, FileMode.Create))
+            model.Photo.CopyTo(fileStream);
         }
+
+        return uniqueFileName;
     }
 }

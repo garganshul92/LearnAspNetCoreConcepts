@@ -1,55 +1,86 @@
 ﻿using LearnAspNetCore.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LearnAspNetCore.Controllers
+namespace LearnAspNetCore.Controllers;
+
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly UserManager<IdentityUser> userManager;
+    private readonly SignInManager<IdentityUser> signInManager;
+
+    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
+        this.userManager = userManager;
+        this.signInManager = signInManager;
+    }
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
-        {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
-        }
-        [HttpGet]
-        [Route("account/register")]
-        public IActionResult Register()
-        {
-            return View();
-        }
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Register()
+    {
+        return View();
+    }
 
-        [HttpPost]
-        [Route("account/register")]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if(ModelState.IsValid)
         {
-            if(ModelState.IsValid)
+            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var result = await userManager.CreateAsync(user, model.Password);
+            if(result.Succeeded)
             {
-                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-                var result = await userManager.CreateAsync(user, model.Password);
-                if(result.Succeeded)
-                {
-                    await signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("index", "home");
-                }
-
-                foreach(var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("index", "home");
             }
 
-            return View(model);
+            foreach(var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Logout()
+        return View(model);
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Logout()
+    {
+        await signInManager.SignOutAsync();
+        return RedirectToAction("index", "home");
+
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+    {
+        if (ModelState.IsValid)
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("index", "home");
+            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+            
+            if (result.Succeeded)
+            {
+                if (string.IsNullOrEmpty(returnUrl))
+                    return RedirectToAction("index", "home");
+                else
+                    return Redirect(returnUrl);
+            }
 
+            ModelState.AddModelError("", "Invalid Login Attempt");
         }
+
+        return View(model);
     }
 }

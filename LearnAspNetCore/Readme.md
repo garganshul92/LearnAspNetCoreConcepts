@@ -1399,4 +1399,165 @@ public async Task<IActionResult> Logout()
 ```
 
 ## 70. Implementing Login Functionality in ASP.NET Core
+- LoginViewModel
+```
+using System.ComponentModel.DataAnnotations;
+
+namespace LearnAspNetCore.ViewModels
+{
+    public class LoginViewModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Display(Name = "Remember me")]
+        public bool RememberMe { get; set; }
+    }
+}
+```
+
+- View
+```
+@model LoginViewModel;
+
+@{
+    ViewBag.Title = "User Login";
+}
+
+<h1>User Login</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="RememberMe">
+                        <input asp-for="RememberMe" />
+                        @Html.DisplayNameFor(m => m.RememberMe)
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</div>
+```
+
+- Controller Action Methods
+```
+[HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("index", "home");
+                }
+
+                ModelState.AddModelError("", "Invalid Login Attempt");
+            }
+
+            return View(model);
+        }
+```
+
+- Persistent Cookie vs Session Cookie
+    - Session Cookie is removed on closing the browser.
+    - Persistent cookies stay there even on closing the browser. To remove the cookie, we should logout.
+
+## 71. Authorization in ASP.NET Core
+- Authentication vs Authorization
+    - Authentication is identifying who the user is
+    - Authorization is identifying what the can or cannot do.
+- Apply Authorize Attribute on Action level
+    ```
+        [HttpGet]
+        [Authorize]
+        public ViewResult Create()
+        {
+            return View();
+        }
+    ```
+- Apply Authorize Attribute at Controller level
+    ```
+        [Authorize]
+        public class HomeController : Controller
+        {
+    ```
+- Apply Authorize Attribute globally
+    ```
+        builder.Services.AddMvc(options =>
+        {
+            var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+            options.EnableEndpointRouting = false;
+        })
+    ```
+- Apply AllowAnonymous Attribute to allow access to allow access to all.
+    ```
+        [AllowAnonymous]
+        public ViewResult Index()
+        {
+            var model = _employeeRepository.GetEmployees();
+            return View(model);
+        }
+    ```
+- What happen if AllowAnonymous attribute is applied at controller level and Authorize attribute at Action level in that controller?
+    - Authorize attribute will be ignored
+- Types of Authorization
+    - Role based Authorization
+    - Claims based Authorization
+    - Policy based Authorization
+    
+## 72. Redirect user to original URL after login in ASP.NET Core
+```
+ [HttpPost]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+    {
+        if (ModelState.IsValid)
+        {
+            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+            
+            if (result.Succeeded)
+            {
+                if (string.IsNullOrEmpty(returnUrl))
+                    return RedirectToAction("index", "home");
+                else
+                    return Redirect(returnUrl);
+            }
+
+            ModelState.AddModelError("", "Invalid Login Attempt");
+        }
+
+        return View(model);
+    }
+```
+
+## 73. Open Redirect Vulnerability Example
 - 

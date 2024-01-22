@@ -1,5 +1,7 @@
 using LearnAspNetCore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NLog.Extensions.Logging;
 
@@ -23,7 +25,12 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 //    options.Password.RequireNonAlphanumeric = false;
 //});
 
-builder.Services.AddMvc(options => options.EnableEndpointRouting = false).AddXmlSerializerFormatters();
+builder.Services.AddMvc(options =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+    options.EnableEndpointRouting = false;
+}).AddXmlSerializerFormatters();
 builder.Services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
 var app = builder.Build();
