@@ -27,17 +27,17 @@ public class AccountController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var user = new IdentityUser { UserName = model.Email, Email = model.Email };
             var result = await userManager.CreateAsync(user, model.Password);
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 await signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("index", "home");
             }
 
-            foreach(var error in result.Errors)
+            foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
@@ -69,18 +69,35 @@ public class AccountController : Controller
         if (ModelState.IsValid)
         {
             var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-            
+
             if (result.Succeeded)
             {
-                if (string.IsNullOrEmpty(returnUrl))
-                    return RedirectToAction("index", "home");
-                else
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
+                else
+                    return RedirectToAction("index", "home");
             }
 
             ModelState.AddModelError("", "Invalid Login Attempt");
         }
 
         return View(model);
+    }
+
+    //[HttpPost]
+    //[HttpGet]
+    // OR
+    [AcceptVerbs("Get", "Post")]
+    [AllowAnonymous]
+    public async Task<IActionResult> IsEmailInUse(string email)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+
+        if(user == null)
+        {
+            return Json(true);
+        }
+
+        return Json($"The email {email} is already in use");
     }
 }

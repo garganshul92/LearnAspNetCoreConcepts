@@ -1560,4 +1560,51 @@ namespace LearnAspNetCore.ViewModels
 ```
 
 ## 73. Open Redirect Vulnerability Example
+- Application Vulnerable to Open Redirect Vulnerability Attacks
+    - Your application redirects to a URL that's specified via the request such as querystring or form data
+    - The redirection is performed without checking if the URL is a local URL
+- Example
+    - The user is tricked into clicking a link in an email where the email returnUrl is set to attackers website.
+    https://example.com/account.login?returnUrl=http://exampple.com/account.login
+    - The user logs in successfully on the authentic website and he is redirected to the attacker website
+    - The user logs in again on the attacker website, thinking that the first login attempt was not successful
+    - The user is then redirected back to the authentic website
+    - During this entire process, the login credentials for the authentic website are compromised
+- Use LocalRedirect()
+```
+if (result.Succeeded)
+{
+    if (string.IsNullOrEmpty(returnUrl))
+        return RedirectToAction("index", "home");
+    else
+        return LocalRedirect(returnUrl);
+}
+```
+- Use Url.IsLocalUrl()
+```
+if (result.Succeeded)
+{
+    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        return Redirect(returnUrl);
+    else
+        return RedirectToAction("index", "home");
+}
+```
+
+## 74. ASP.NET core client side validation
+- Add Following jquery libraries in order
+    ```
+        <script src="~/lib/jquery/jquery.js"></script>
+        <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    ```
+- Validation attributes added in the server side will be handled on UI unobtrusive.js
+- jquery.validate.unobtrusive.js reads data-val attributes in UI and perform the validation
+```
+<input class="form-control" type="email" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="Email" name="Email" value="">
+```
+- Make sure the order is correct
+- Make sure client side javascript is not disabled
+
+## 75. ASP.NET Core remote validation
 - 
